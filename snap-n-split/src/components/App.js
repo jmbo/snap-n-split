@@ -8,7 +8,7 @@ const people = [
   { id: 2, name: "Markus", balance: 0 },
 ];
 
-const bill = {
+const billDummy = {
   items: [
     {
       id: 1,
@@ -16,8 +16,8 @@ const bill = {
       description: "#1 Captain Crunch FT",
       total: 80.0,
       splits: [
-        { quantity: 0.5, peopleID: 1 },
-        { quantity: 0.5, peopleID: 2 },
+        { id: 1, quantity: 0.5, peopleID: 1 },
+        { id: 2, quantity: 0.5, peopleID: 2 },
       ],
     },
     {
@@ -25,7 +25,7 @@ const bill = {
       quantity: 1,
       description: "Autumn",
       total: 17.95,
-      splits: [{ quantity: 1, peopleID: 1 }],
+      splits: [{ id: 1, quantity: 1, peopleID: 1 }],
     },
     {
       id: 3,
@@ -44,14 +44,26 @@ const bill = {
   total: 282.05,
 };
 
-const steps = [
-  <UploadBill />,
-  <ApplySplits bill={bill} people={people} />,
-  <ViewTotals />,
-];
-
 export default function App() {
   const [step, setStep] = useState(1);
+  const [bill, setBill] = useState(billDummy);
+
+  const steps = [
+    <UploadBill />,
+    <ApplySplits
+      bill={bill}
+      people={people}
+      onRemove={handleRemoveItem}
+      onSplit={handleSplit}
+    />,
+    <ViewTotals />,
+  ];
+
+  function handleRemoveItem(id) {
+    setBill({ ...bill, items: bill.items.filter((el) => el.id !== id) });
+  }
+
+  function handleSplit() {}
 
   return (
     <div className="App">

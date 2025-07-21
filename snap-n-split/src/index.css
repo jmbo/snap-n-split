@@ -3,6 +3,7 @@
 /* ************************************************ */
 
 :root {
+  --app-color: #f7f7f7;
   --bad-split: #ffebeb;
   --good-split: #eeffeb;
   --neutral-split: #f5f5f5;
@@ -42,7 +43,7 @@ h1 {
 
   width: 600px;
   min-height: 600px;
-  background-color: #ececec;
+  background-color: var(--app-color);
   border-radius: 7px;
   padding: 25px 100px;
   margin: 100px auto;
@@ -125,21 +126,21 @@ h1 {
 .item {
   display: flex;
   flex-direction: row;
+  background-color: var(--bad-split);
+  border-radius: 10px;
   /* padding: 20px; */
+}
+
+.item.good-split {
+  background-color: var(--good-split);
 }
 
 .item-listing {
   display: flex;
   justify-content: space-between;
-  background-color: var(--bad-split);
   padding: 20px;
-  border-radius: 10px 0 0 10px;
   width: 100%;
   cursor: pointer;
-}
-
-.item-listing.good-split {
-  background-color: var(--good-split);
 }
 
 .item-listing span {
@@ -149,20 +150,12 @@ h1 {
 .item-remove {
   width: 2rem;
   padding-top: 20px;
-  background-color: var(--neutral-split);
-  border-inline-start: 5px solid;
-  border-radius: 0 10px 10px 0;
-  /* height: ; */
-  /* cursor: pointer; */
+  /* border-inline-start: 1px solid; */
 }
 
 .item-remove span {
-    cursor: pointer;
-}
-
-/* .item-remove::target-text {
   cursor: pointer;
-} */
+}
 
 [name="add-circle-outline"] {
   height: 3rem;
@@ -185,6 +178,7 @@ h1 {
 .split {
   display: flex;
   justify-content: space-between;
+  padding: 5px;
 }
 
 .split input {

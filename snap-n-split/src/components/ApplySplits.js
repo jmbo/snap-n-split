@@ -1,4 +1,4 @@
-export function ApplySplits({ bill, people }) {
+export function ApplySplits({ bill, people, onRemove, onSplit }) {
   return (
     <>
       <h3>➗ Apply the Splits</h3>
@@ -6,7 +6,13 @@ export function ApplySplits({ bill, people }) {
       <div className="list">
         <ul>
           {bill.items.map((item) => (
-            <Item item={item} people={people} key={item.id} />
+            <Item
+              item={item}
+              people={people}
+              onRemove={onRemove}
+              onSplit={onSplit}
+              key={item.id}
+            />
           ))}
         </ul>
       </div>
@@ -15,8 +21,13 @@ export function ApplySplits({ bill, people }) {
   );
 }
 
-function Item({ item, people }) {
+function Item({ item, people, onRemove, onSplit }) {
+  const currentSplits = item.splits.reduce((cur, t) => cur + t.quantity, 0);
+  const remainingSplits = item.quantity - currentSplits;
+
   function handleSplitContainerToggle(e) {
+    // console.log(e.currentTarget);
+
     const itemListing = e.currentTarget.querySelector(".item-listing");
     const splitContainer = e.currentTarget.querySelector(".split-container");
 
@@ -25,17 +36,16 @@ function Item({ item, people }) {
     splitContainer.classList.toggle("hidden");
   }
 
+  function handleSplit() {}
+
   return (
     <li onClick={handleSplitContainerToggle}>
-      <div className="item">
-        <div
-          className={`item-listing ${
-            item.splits.reduce((cur, t) => cur + t.quantity, 0) ===
-            item.quantity
-              ? "good-split"
-              : ""
-          }`}
-        >
+      <div
+        className={`item ${
+          currentSplits === item.quantity ? "good-split" : ""
+        }`}
+      >
+        <div className="item-listing">
           <div>
             <span>{item.quantity}</span>
             <span>{item.description}</span>
@@ -45,12 +55,29 @@ function Item({ item, people }) {
           </div>
         </div>
         <div className="item-remove">
-          <span>❌</span>
+          <span onClick={() => onRemove(item.id)}>❌</span>
         </div>
       </div>
 
       <div className="split-container hidden">
-        <Split item={item} people={people} />
+        {item.splits.map(({ id, quantity, peopleID }) => (
+          <Split
+            quantity={quantity}
+            peopleID={peopleID}
+            people={people}
+            onSplit={handleSplit}
+            key={id}
+          />
+        ))}
+        {remainingSplits > 0 && (
+          <Split
+            quantity={remainingSplits}
+            peopleID={0}
+            people={people}
+            onSplit={handleSplit}
+            key={0}
+          />
+        )}
       </div>
     </li>
   );
@@ -61,7 +88,7 @@ function Item({ item, people }) {
 //   quantity: 1,
 //   description: "Autumn",
 //   total: 17.95,
-//   splits: [{ quantity: 1, peopleID: 1 }],
+//   splits: [{ id: 1, quantity: 1, peopleID: 1 }],
 // },
 
 // const people = [
@@ -69,38 +96,23 @@ function Item({ item, people }) {
 //   { id: 2, name: "Markus", balance: 0 },
 // ];
 
-function Split({ item, people }) {
-  const remainingSplits =
-    item.quantity - item.splits.reduce((cur, t) => cur + t.quantity, 0);
-
+function Split({ quantity, peopleID, people, onSplit }) {
   return (
-    <>
-      {item.splits.map(({ quantity, peopleID }) => (
-        <div className="split">
-          <input type="number" placeholder={quantity}></input>
-          <select value={peopleID}>
-            <option value={0} key={0}></option>
-            {people.map((person) => (
-              <option value={person.id} key={person.id}>
-                {person.name}
-              </option>
-            ))}
-          </select>
-        </div>
-      ))}
-      {remainingSplits > 0 && (
-        <div className="split">
-          <input type="number" placeholder={remainingSplits}></input>
-          <select>
-            <option value={0} key={0}></option>
-            {people.map((person) => (
-              <option value={person.id} key={person.id}>
-                {person.name}
-              </option>
-            ))}
-          </select>
-        </div>
+    <div className="split">
+      {peopleID === 0 && (
+        <input type="number" placeholder={quantity} onChange={onSplit}></input>
       )}
-    </>
+      {peopleID !== 0 && (
+        <input type="number" value={quantity} onChange={onSplit}></input>
+      )}
+      <select value={peopleID} onChange={onSplit}>
+        <option value={0} key={0}></option>
+        {people.map((person) => (
+          <option value={person.id} key={person.id}>
+            {person.name}
+          </option>
+        ))}
+      </select>
+    </div>
   );
 }
