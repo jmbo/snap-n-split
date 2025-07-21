@@ -133,7 +133,7 @@ h1 {
   justify-content: space-between;
   background-color: var(--bad-split);
   padding: 20px;
-  border-radius: 10px;
+  border-radius: 10px 0 0 10px;
   width: 100%;
   cursor: pointer;
 }
@@ -150,8 +150,14 @@ h1 {
   width: 2rem;
   padding-top: 20px;
   background-color: var(--neutral-split);
+  border-inline-start: 5px solid;
+  border-radius: 0 10px 10px 0;
   /* height: ; */
   /* cursor: pointer; */
+}
+
+.item-remove span {
+    cursor: pointer;
 }
 
 /* .item-remove::target-text {

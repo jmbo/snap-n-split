@@ -44,7 +44,9 @@ function Item({ item, people }) {
             <span>${item.total.toFixed(2)}</span>
           </div>
         </div>
-        <span className="item-remove">❌</span>
+        <div className="item-remove">
+          <span>❌</span>
+        </div>
       </div>
 
       <div className="split-container hidden">
