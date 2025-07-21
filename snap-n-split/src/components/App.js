@@ -4,20 +4,36 @@ import { ApplySplits } from "./ApplySplits";
 import { ViewTotals } from "./ViewTotals";
 
 const people = [
-  { name: "Person 1", balance: 0 },
-  { name: "Person 2", balance: 0 },
+  { id: 1, name: "Jose", balance: 0 },
+  { id: 2, name: "Markus", balance: 0 },
 ];
 
 const bill = {
   items: [
     {
+      id: 1,
       quantity: 4,
       description: "#1 Captain Crunch FT",
       total: 80.0,
+      splits: [
+        { quantity: 0.5, peopleID: 1 },
+        { quantity: 0.5, peopleID: 2 },
+      ],
+    },
+    {
+      id: 2,
+      quantity: 1,
+      description: "Autumn",
+      total: 17.95,
+      splits: [{ quantity: 1, peopleID: 1 }],
+    },
+    {
+      id: 3,
+      quantity: 1,
+      description: "G&Gs Scramble",
+      total: 15.0,
       splits: [],
     },
-    { quantity: 1, description: "autumn", total: 17.95, splits: [] },
-    { quantity: 1, description: "G&Gs Scramble", total: 15.0, splits: [] },
   ],
   subtotal: 223.85,
   salesTaxPercentage: 6,
