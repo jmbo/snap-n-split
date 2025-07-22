@@ -185,7 +185,19 @@ h1 {
   width: 4rem;
   height: 2rem;
   text-align: center;
+
+  /* appearance: none; */
+  /* -webkit-appearance: none; */
+  /* margin: 0; */
+  /* -moz-appearance: textfield; */
 }
+
+/* Chrome, Safari, Edge, Opera */
+/* input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+} */
 
 .split select {
   width: 80%;

@@ -3,6 +3,8 @@ import UploadBill from "./UploadBill";
 import { ApplySplits } from "./ApplySplits";
 import { ViewTotals } from "./ViewTotals";
 
+// import { cloneDeep } from "lodash";
+
 const people = [
   { id: 1, name: "Jose", balance: 0 },
   { id: 2, name: "Markus", balance: 0 },
@@ -16,8 +18,9 @@ const billDummy = {
       description: "#1 Captain Crunch FT",
       total: 80.0,
       splits: [
-        { id: 1, quantity: 0.5, peopleID: 1 },
-        { id: 2, quantity: 0.5, peopleID: 2 },
+        { peopleID: 0, quantity: 3 },
+        { peopleID: 1, quantity: 0.5 },
+        { peopleID: 2, quantity: 0.5 },
       ],
     },
     {
@@ -25,14 +28,17 @@ const billDummy = {
       quantity: 1,
       description: "Autumn",
       total: 17.95,
-      splits: [{ id: 1, quantity: 1, peopleID: 1 }],
+      splits: [
+        { peopleID: 0, quantity: 0 },
+        { peopleID: 1, quantity: 1 },
+      ],
     },
     {
       id: 3,
       quantity: 1,
       description: "G&Gs Scramble",
       total: 15.0,
-      splits: [],
+      splits: [{ peopleID: 0, quantity: 1 }],
     },
   ],
   subtotal: 223.85,
@@ -60,10 +66,57 @@ export default function App() {
   ];
 
   function handleRemoveItem(id) {
-    setBill({ ...bill, items: bill.items.filter((el) => el.id !== id) });
+    setBill({ ...bill, items: bill.items.filter((item) => item.id !== id) });
   }
 
-  function handleSplit() {}
+  function handleSplit(id, oldQuantity, newQuantity, oldPersonID, newPersonID) {
+    console.log(id, oldQuantity, newQuantity, oldPersonID, newPersonID);
+
+    let newSplits = structuredClone(
+      bill.items.find((item) => item.id === id)?.splits
+    );
+
+    console.log(newSplits);
+
+    if (oldPersonID !== newPersonID) {
+      // person of split changed, so:
+      // check if new person exists and assign new quantity to new person
+      newSplits = newSplits.some((el) => el.peopleID === newPersonID)
+        ? newSplits.map((el) =>
+            el.peopleID === newPersonID
+              ? { ...el, quantity: el.quantity + newQuantity }
+              : el
+          )
+        : [...newSplits, { peopleID: newPersonID, quantity: newQuantity }];
+
+      // and remove from old
+      newSplits = newSplits.map((el) =>
+        el.peopleID === oldPersonID
+          ? { ...el, quantity: el.quantity - newQuantity }
+          : el
+      );
+    } else {
+      // person remains the same, but quantity is changed so:
+      //  modify person's split
+      newSplits = newSplits.map((el) =>
+        el.peopleID === newPersonID ? { ...el, quantity: newQuantity } : el
+      );
+      // and add difference to 0 person (unallocated split)
+      newSplits = newSplits.map((el) =>
+        el.peopleID === 0
+          ? { ...el, quantity: el.quantity - (newQuantity - oldQuantity) }
+          : el
+      );
+    }
+    console.log(newSplits);
+
+    setBill({
+      ...bill,
+      items: bill.items.map((item) =>
+        item.id === id ? { ...item, splits: newSplits } : item
+      ),
+    });
+  }
 
   return (
     <div className="App">

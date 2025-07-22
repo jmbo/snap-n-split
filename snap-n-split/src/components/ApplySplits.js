@@ -22,7 +22,9 @@ export function ApplySplits({ bill, people, onRemove, onSplit }) {
 }
 
 function Item({ item, people, onRemove, onSplit }) {
-  const currentSplits = item.splits.reduce((cur, t) => cur + t.quantity, 0);
+  const currentSplits = item.splits
+    .filter((split) => split.peopleID !== 0)
+    .reduce((cur, t) => cur + t.quantity, 0);
   const remainingSplits = item.quantity - currentSplits;
 
   function handleSplitContainerToggle(e) {
@@ -36,7 +38,9 @@ function Item({ item, people, onRemove, onSplit }) {
     splitContainer.classList.toggle("hidden");
   }
 
-  function handleSplit() {}
+  function handleSplit(...params) {
+    onSplit(item.id, ...params);
+  }
 
   return (
     <li onClick={handleSplitContainerToggle}>
@@ -60,19 +64,23 @@ function Item({ item, people, onRemove, onSplit }) {
       </div>
 
       <div className="split-container hidden">
-        {item.splits.map(({ id, quantity, peopleID }) => (
-          <Split
-            quantity={quantity}
-            peopleID={peopleID}
-            people={people}
-            onSplit={handleSplit}
-            key={id}
-          />
-        ))}
+        {item.splits
+          .filter((split) => split.peopleID !== 0 && split.quantity !== 0)
+          .map(({ quantity, peopleID }) => (
+            <Split
+              quantity={quantity}
+              remainingSplits={remainingSplits}
+              personID={peopleID}
+              people={people}
+              onSplit={handleSplit}
+              key={peopleID}
+            />
+          ))}
         {remainingSplits > 0 && (
           <Split
             quantity={remainingSplits}
-            peopleID={0}
+            remainingSplits={remainingSplits}
+            personID={0}
             people={people}
             onSplit={handleSplit}
             key={0}
@@ -83,29 +91,49 @@ function Item({ item, people, onRemove, onSplit }) {
   );
 }
 
-// {
-//   id: 2,
-//   quantity: 1,
-//   description: "Autumn",
-//   total: 17.95,
-//   splits: [{ id: 1, quantity: 1, peopleID: 1 }],
-// },
+function Split({ quantity, remainingSplits, personID, people, onSplit }) {
+  //   const [localPersonID, setLocalPersonID] = useState(peopleID);
+  //   const [localQuantity, setLocalQuantity] = useState(quantity);
 
-// const people = [
-//   { id: 1, name: "Jose", balance: 0 },
-//   { id: 2, name: "Markus", balance: 0 },
-// ];
+  function handleSplitChange(target) {
+    const parent = target.parentNode;
+    const newQuantity =
+      parent.querySelector("input").value === ""
+        ? parent.querySelector("input").placeholder
+        : parent.querySelector("input").value;
 
-function Split({ quantity, peopleID, people, onSplit }) {
+    const newPersonID = parent.querySelector("select").value;
+
+    onSplit(quantity, +newQuantity, personID, +newPersonID);
+
+    // debugger;
+    if (personID === 0 && +newPersonID !== 0)
+      parent.querySelector("input").value = "";
+  }
+
   return (
     <div className="split">
-      {peopleID === 0 && (
-        <input type="number" placeholder={quantity} onChange={onSplit}></input>
+      {personID === 0 && (
+        <input
+          type="number"
+          min="0"
+          step="0.5"
+          max={remainingSplits}
+          placeholder={remainingSplits}
+          onChange={(e) => handleSplitChange(e.target)}
+        ></input>
       )}
-      {peopleID !== 0 && (
-        <input type="number" value={quantity} onChange={onSplit}></input>
+      {personID !== 0 && (
+        <input
+          type="number"
+          min="0"
+          step="0.5"
+          max={quantity + remainingSplits}
+          value={quantity}
+          onChange={(e) => handleSplitChange(e.target)}
+        ></input>
       )}
-      <select value={peopleID} onChange={onSplit}>
+      <select value={personID} onChange={(e) => handleSplitChange(e.target)}>
         <option value={0} key={0}></option>
         {people.map((person) => (
           <option value={person.id} key={person.id}>
