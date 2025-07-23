@@ -28,12 +28,19 @@ function Item({ item, people, onRemove, onSplit }) {
   const remainingSplits = item.quantity - currentSplits;
 
   function handleSplitContainerToggle(e) {
-    // console.log(e.currentTarget);
-
     const itemListing = e.currentTarget.querySelector(".item-listing");
     const splitContainer = e.currentTarget.querySelector(".split-container");
 
-    if (e.target !== itemListing) return;
+    if (!itemListing.contains(e.target)) return;
+
+    const list = e.currentTarget.parentNode;
+    const allSplitContainers = list.querySelectorAll(".split-container");
+
+    allSplitContainers.forEach((container) => {
+      if (container !== splitContainer) {
+        container.classList.add("hidden");
+      }
+    });
 
     splitContainer.classList.toggle("hidden");
   }
