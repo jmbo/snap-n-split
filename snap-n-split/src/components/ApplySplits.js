@@ -23,7 +23,7 @@ export function ApplySplits({ bill, people, onRemove, onSplit }) {
 
 function Item({ item, people, onRemove, onSplit }) {
   const currentSplits = item.splits
-    .filter((split) => split.peopleID !== 0)
+    .filter((split) => split.personID !== 0)
     .reduce((cur, t) => cur + t.quantity, 0);
   const remainingSplits = item.quantity - currentSplits;
 
@@ -72,15 +72,15 @@ function Item({ item, people, onRemove, onSplit }) {
 
       <div className="split-container hidden">
         {item.splits
-          .filter((split) => split.peopleID !== 0 && split.quantity !== 0)
-          .map(({ quantity, peopleID }) => (
+          .filter((split) => split.personID !== 0 && split.quantity !== 0)
+          .map(({ quantity, personID }) => (
             <Split
               quantity={quantity}
               remainingSplits={remainingSplits}
-              personID={peopleID}
+              personID={personID}
               people={people}
               onSplit={handleSplit}
-              key={peopleID}
+              key={personID}
             />
           ))}
         {remainingSplits > 0 && (
@@ -99,7 +99,7 @@ function Item({ item, people, onRemove, onSplit }) {
 }
 
 function Split({ quantity, remainingSplits, personID, people, onSplit }) {
-  //   const [localPersonID, setLocalPersonID] = useState(peopleID);
+  //   const [localPersonID, setLocalPersonID] = useState(personID);
   //   const [localQuantity, setLocalQuantity] = useState(quantity);
 
   function handleSplitChange(target) {

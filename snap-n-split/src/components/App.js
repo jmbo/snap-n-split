@@ -1,69 +1,63 @@
 import { useState } from "react";
 import UploadBill from "./UploadBill";
+import { ManagePeople } from "./ManagePeople";
 import { ApplySplits } from "./ApplySplits";
 import { ViewTotals } from "./ViewTotals";
+import { People, Bill } from "./DataModel";
 
 // import { cloneDeep } from "lodash";
 
-const people = [
-  { id: 1, name: "Jose", balance: 0 },
-  { id: 2, name: "Markus", balance: 0 },
-];
-
-const billDummy = {
-  items: [
-    {
-      id: 1,
-      quantity: 4,
-      description: "#1 Captain Crunch FT",
-      total: 80.0,
-      splits: [
-        { peopleID: 0, quantity: 3 },
-        { peopleID: 1, quantity: 0.5 },
-        { peopleID: 2, quantity: 0.5 },
-      ],
-    },
-    {
-      id: 2,
-      quantity: 1,
-      description: "Autumn",
-      total: 17.95,
-      splits: [
-        { peopleID: 0, quantity: 0 },
-        { peopleID: 1, quantity: 1 },
-      ],
-    },
-    {
-      id: 3,
-      quantity: 1,
-      description: "G&Gs Scramble",
-      total: 15.0,
-      splits: [{ peopleID: 0, quantity: 1 }],
-    },
-  ],
-  subtotal: 223.85,
-  salesTaxPercentage: 6,
-  totalSalesTax: 13.43,
-  gratuityPercentage: 20,
-  gratuityPreTax: true,
-  gratuityTotal: 44.77,
-  total: 282.05,
-};
-
 export default function App() {
+  const peopleData = new People();
+  const billData = new Bill();
+
+  peopleData.addPerson("Jose");
+  peopleData.addPerson("Markus");
+
+  billData.addItem(4, "#1 Captain Crunch FT", 80.0);
+  billData.addItem(1, "Autumn", 17.95);
+  billData.addItem(1, "G&Gs Scramble", 15.0);
+
   const [step, setStep] = useState(1);
-  const [bill, setBill] = useState(billDummy);
+  const [people, setPeople] = useState(peopleData.getData());
+
+  const [bill, setBill] = useState(billData.getData());
 
   const steps = [
     <UploadBill />,
+    <ManagePeople
+      people={people}
+      onAdd={handleAddPerson}
+      onRemove={handleRemovePerson}
+    />,
     <ApplySplits
       bill={bill}
       people={people}
       onRemove={handleRemoveItem}
       onSplit={handleSplit}
+      onAddItem={handleAddItem}
     />,
     <ViewTotals />,
   ];
+
+  // Add/remove handlers
+  function handleAddPerson(name) {
+    // setPeople((prev) => [...prev, { id: Date.now(), name, balance: 0 }]);
+    setPeople(peopleData.addPerson(name));
+  }
+  function handleRemovePerson(id) {
+    // setPeople((prev) => prev.filter((p) => p.id !== id));
+    setPeople(peopleData.removePerson(id));
+
+    // setBill((prevBill) => ({
+    //   ...prevBill,
+    //   items: prevBill.items.map((item) => ({
+    //     ...item,
+    //     splits: item.splits.filter((split) => split.peopleID !== id),
+    //   })),
+    // }));
+    setBill(billData.removePersonSplits(id));
+  }
 
   function handleRemoveItem(id) {
     setBill({ ...bill, items: bill.items.filter((item) => item.id !== id) });
@@ -118,23 +112,24 @@ export default function App() {
     });
   }
 
+  function handleAddItem(newItem) {
+    setBill((prevBill) => ({
+      ...prevBill,
+      items: [
+        ...prevBill.items,
+        {
+          id: Date.now(),
+          quantity: newItem.quantity,
+          description: newItem.description,
+          total: newItem.total,
+          splits: [{ peopleID: 0, quantity: newItem.quantity }],
+        },
+      ],
+    }));
+  }
+
   return (
     <div className="App">
-      {/* <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header> */}
-
       <h1>Snap 'N Split</h1>
 
       <div className="main-container">{steps[step - 1]}</div>
