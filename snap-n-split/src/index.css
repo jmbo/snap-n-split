@@ -7,6 +7,9 @@
   --bad-split: #ffebeb;
   --good-split: #eeffeb;
   --neutral-split: #f5f5f5;
+
+  --black: #333;
+  --white: #fff;
 }
 
 * {
@@ -15,7 +18,7 @@
 
 body {
   font-family: sans-serif;
-  color: #333;
+  color: var(--black);
 }
 
 h1 {
@@ -45,7 +48,7 @@ h1 {
   min-height: 600px;
   background-color: var(--app-color);
   border-radius: 7px;
-  padding: 25px 100px;
+  padding: 25px 50px;
   margin: 100px auto;
 }
 
@@ -90,6 +93,13 @@ h1 {
   flex-direction: column;
   gap: 3.2rem;
   align-items: center;
+
+  border-radius: 12px;
+  padding: 2rem;
+  /* max-width: 400px; */
+  /* margin: 2rem auto; */
+  background: var(--white);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.07);
 }
 
 /* .actions button,
@@ -251,4 +261,89 @@ input::-webkit-inner-spin-button {
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
+}
+
+.manage-people {
+  background: #fff;
+  border-radius: 12px;
+  padding: 2rem;
+  max-width: 400px;
+  margin: 2rem auto;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.07);
+}
+
+.manage-people h2 {
+  margin-bottom: 1.5rem;
+  color: #2d2d2d;
+  font-size: 1.5rem;
+  text-align: center;
+}
+
+.people-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1.5rem 0;
+}
+
+.people-list-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #eee;
+}
+
+.person-name {
+  font-weight: 500;
+  color: #333;
+}
+
+.remove-btn {
+  background: #ff4d4f;
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 2rem;
+  height: 2rem;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.remove-btn:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+.remove-btn:not(:disabled):hover {
+  background: #d9363e;
+}
+
+.add-person-row {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.add-person-input {
+  flex: 1;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #bbb;
+  border-radius: 6px;
+  font-size: 1rem;
+}
+
+.add-btn {
+  background: #2d8cff;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 0.5rem 1.2rem;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.add-btn:hover {
+  background: #1765ad;
 }
