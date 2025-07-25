@@ -34,7 +34,7 @@ export default function App() {
       bill={bill}
       people={people}
       onRemove={handleRemoveItem}
-      onSplit={handleSplit}
+      onSplit={handleSplitItem}
       onAddItem={handleAddItem}
     />,
     <ViewTotals />,
@@ -59,73 +59,91 @@ export default function App() {
     setBill(billData.removePersonSplits(id));
   }
 
+  function handleAddItem(newItem) {
+    // setBill((prevBill) => ({
+    //   ...prevBill,
+    //   items: [
+    //     ...prevBill.items,
+    //     {
+    //       id: Date.now(),
+    //       quantity: newItem.quantity,
+    //       description: newItem.description,
+    //       total: newItem.total,
+    //       splits: [{ peopleID: 0, quantity: newItem.quantity }],
+    //     },
+    //   ],
+    // }));
+    setBill(
+      billData.addItem(newItem.quantity, newItem.description, newItem.total)
+    );
+  }
   function handleRemoveItem(id) {
-    setBill({ ...bill, items: bill.items.filter((item) => item.id !== id) });
+    // setBill({ ...bill, items: bill.items.filter((item) => item.id !== id) });
+    setBill(billData.removeItem(id));
   }
 
-  function handleSplit(id, oldQuantity, newQuantity, oldPersonID, newPersonID) {
+  function handleSplitItem(
+    id,
+    oldQuantity,
+    newQuantity,
+    oldPersonID,
+    newPersonID
+  ) {
     console.log(id, oldQuantity, newQuantity, oldPersonID, newPersonID);
 
-    let newSplits = structuredClone(
-      bill.items.find((item) => item.id === id)?.splits
-    );
+    // let newSplits = structuredClone(
+    //   bill.items.find((item) => item.id === id)?.splits
+    // );
 
-    console.log(newSplits);
+    // console.log(newSplits);
+    console.log(billData.getData());
 
     if (oldPersonID !== newPersonID) {
       // person of split changed, so:
       // check if new person exists and assign new quantity to new person
-      newSplits = newSplits.some((el) => el.peopleID === newPersonID)
-        ? newSplits.map((el) =>
-            el.peopleID === newPersonID
-              ? { ...el, quantity: el.quantity + newQuantity }
-              : el
-          )
-        : [...newSplits, { peopleID: newPersonID, quantity: newQuantity }];
+      //   newSplits = newSplits.some((el) => el.peopleID === newPersonID)
+      //     ? newSplits.map((el) =>
+      //         el.peopleID === newPersonID
+      //           ? { ...el, quantity: el.quantity + newQuantity }
+      //           : el
+      //       )
+      //     : [...newSplits, { peopleID: newPersonID, quantity: newQuantity }];
+
+      billData.splitItemAdd(id, newPersonID, newQuantity);
 
       // and remove from old
-      newSplits = newSplits.map((el) =>
-        el.peopleID === oldPersonID
-          ? { ...el, quantity: el.quantity - newQuantity }
-          : el
-      );
+      //   newSplits = newSplits.map((el) =>
+      //     el.peopleID === oldPersonID
+      //       ? { ...el, quantity: el.quantity - newQuantity }
+      //       : el
+      //   );
+      billData.splitItemRemove(id, oldPersonID, newQuantity);
     } else {
       // person remains the same, but quantity is changed so:
       //  modify person's split
-      newSplits = newSplits.map((el) =>
-        el.peopleID === newPersonID ? { ...el, quantity: newQuantity } : el
-      );
+      //   newSplits = newSplits.map((el) =>
+      //     el.peopleID === newPersonID ? { ...el, quantity: newQuantity } : el
+      //   );
+      billData.splitItemUpdate(id, newPersonID, newQuantity);
       // and add difference to 0 person (unallocated split)
-      newSplits = newSplits.map((el) =>
-        el.peopleID === 0
-          ? { ...el, quantity: el.quantity - (newQuantity - oldQuantity) }
-          : el
-      );
+      //   newSplits = newSplits.map((el) =>
+      //     el.peopleID === 0
+      //       ? { ...el, quantity: el.quantity - (newQuantity - oldQuantity) }
+      //       : el
+      //   );
+      billData.splitItemAdd(id, 0, newQuantity - oldQuantity);
     }
-    console.log(newSplits);
+    // console.log(newSplits);
 
-    setBill({
-      ...bill,
-      items: bill.items.map((item) =>
-        item.id === id ? { ...item, splits: newSplits } : item
-      ),
-    });
-  }
+    // setBill({
+    //   ...bill,
+    //   items: bill.items.map((item) =>
+    //     item.id === id ? { ...item, splits: newSplits } : item
+    //   ),
+    // });
 
-  function handleAddItem(newItem) {
-    setBill((prevBill) => ({
-      ...prevBill,
-      items: [
-        ...prevBill.items,
-        {
-          id: Date.now(),
-          quantity: newItem.quantity,
-          description: newItem.description,
-          total: newItem.total,
-          splits: [{ peopleID: 0, quantity: newItem.quantity }],
-        },
-      ],
-    }));
+    console.log(billData.getData());
+    setBill(billData.getData());
   }
 
   return (

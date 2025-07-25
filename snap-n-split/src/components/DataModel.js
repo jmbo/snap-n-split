@@ -100,7 +100,23 @@ export class Bill {
     return this.getData();
   }
 
-  splitItem(itemId, personID, quantity) {
+  splitItemAdd(itemId, personID, quantity) {
+    const item = this.#data.items.find((item) => item.id === itemId);
+    if (!item) return;
+
+    const existingSplit = item.splits.find(
+      (split) => split.personID === personID
+    );
+    if (existingSplit) {
+      existingSplit.quantity += quantity;
+    } else {
+      item.splits.push({ personID: personID, quantity });
+    }
+
+    return this.getData();
+  }
+
+  splitItemUpdate(itemId, personID, quantity) {
     const item = this.#data.items.find((item) => item.id === itemId);
     if (!item) return;
 
@@ -111,6 +127,20 @@ export class Bill {
       existingSplit.quantity = quantity;
     } else {
       item.splits.push({ personID: personID, quantity });
+    }
+
+    return this.getData();
+  }
+
+  splitItemRemove(itemId, personID, quantity) {
+    const item = this.#data.items.find((item) => item.id === itemId);
+    if (!item) return;
+
+    const existingSplit = item.splits.find(
+      (split) => split.personID === personID
+    );
+    if (existingSplit) {
+      existingSplit.quantity -= quantity;
     }
 
     return this.getData();

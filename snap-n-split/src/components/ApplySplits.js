@@ -46,6 +46,8 @@ function Item({ item, people, onRemove, onSplit }) {
   }
 
   function handleSplit(...params) {
+    console.log(item);
+
     onSplit(item.id, ...params);
   }
 
