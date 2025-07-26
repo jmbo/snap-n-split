@@ -17,7 +17,12 @@ export class People {
     this.#data.push({
       id: this.idGenerator.next().value,
       name,
-      balance: 0,
+      balance: {
+        subtotal: 0,
+        salesTax: 0,
+        gratuity: 0,
+        total: 0,
+      },
     });
 
     return this.getData();
@@ -27,6 +32,37 @@ export class People {
     this.#data = this.#data.filter((p) => p.id !== id);
 
     return this.getData();
+  }
+
+  updatePersonTotals(id, newTotals) {
+    const person = this.#data.find((p) => p.id === id);
+    if (!person) return;
+
+    person.balance = {
+      ...person.balance,
+      ...newTotals,
+    };
+
+    return this.getData();
+  }
+
+  isMinMax(id) {
+    const person = this.#data.find((p) => p.id === id);
+    if (!person) return false;
+
+    const total = person.balance.total;
+    let min = true;
+    let max = true;
+
+    this.#data.forEach((p) => {
+      if (p.id !== id) {
+        if (p.balance.total < total) min = false;
+        if (p.balance.total > total) max = false;
+      }
+    });
+
+    // return total === 0 || total === Infinity || total === -Infinity;
+    return min || max;
   }
 }
 
@@ -50,6 +86,19 @@ export class Bill {
     this.idGenerator = this.numIdGen();
   }
 
+  #calculateTaxAndTotals() {
+    this.#data.totalSalesTax =
+      (this.#data.subtotal * this.#data.salesTaxPercentage) / 100;
+    this.#data.gratuityTotal =
+      this.#data.gratuityPreTax === true
+        ? (this.#data.subtotal * this.#data.gratuityPercentage) / 100
+        : ((this.#data.subtotal + this.#data.totalSalesTax) *
+            this.#data.gratuityPercentage) /
+          100;
+    this.#data.total =
+      this.#data.subtotal + this.#data.totalSalesTax + this.#data.gratuityTotal;
+  }
+
   getData() {
     return JSON.parse(JSON.stringify(this.#data));
   }
@@ -63,18 +112,10 @@ export class Bill {
       splits: [{ personID: 0, quantity }],
     };
 
-    this.#data.items.push(newItem);
     this.#data.subtotal += total;
-    this.#data.totalSalesTax =
-      (this.#data.subtotal * this.#data.salesTaxPercentage) / 100;
-    this.#data.gratuityTotal =
-      this.#data.gratuityPreTax === true
-        ? (this.#data.subtotal * this.#data.gratuityPercentage) / 100
-        : ((this.#data.subtotal + this.#data.totalSalesTax) *
-            this.#data.gratuityPercentage) /
-          100;
-    this.#data.total =
-      this.#data.subtotal + this.#data.totalSalesTax + this.#data.gratuityTotal;
+    this.#calculateTaxAndTotals();
+
+    this.#data.items.push(newItem);
 
     return this.getData();
   }
@@ -84,16 +125,7 @@ export class Bill {
     if (!item) return;
 
     this.#data.subtotal -= item.total;
-    this.#data.totalSalesTax =
-      (this.#data.subtotal * this.#data.salesTaxPercentage) / 100;
-    this.#data.gratuityTotal =
-      this.#data.gratuityPreTax === true
-        ? (this.#data.subtotal * this.#data.gratuityPercentage) / 100
-        : ((this.#data.subtotal + this.#data.totalSalesTax) *
-            this.#data.gratuityPercentage) /
-          100;
-    this.#data.total =
-      this.#data.subtotal + this.#data.totalSalesTax + this.#data.gratuityTotal;
+    this.#calculateTaxAndTotals();
 
     this.#data.items = this.#data.items.filter((item) => item.id !== id);
 
@@ -169,5 +201,54 @@ export class Bill {
     });
 
     return this.getData();
+  }
+
+  setSalesTaxPercentage(percentage) {
+    this.#data.salesTaxPercentage = percentage;
+    this.#calculateTaxAndTotals();
+
+    return this.getData();
+  }
+
+  setGratuityPercentage(percentage) {
+    this.#data.gratuityPercentage = percentage;
+    this.#calculateTaxAndTotals();
+
+    return this.getData();
+  }
+
+  setGratuityPreTax(preTax) {
+    this.#data.gratuityPreTax = preTax;
+    this.#calculateTaxAndTotals();
+
+    return this.getData();
+  }
+
+  getPersonTotals(personID) {
+    const personTotals = {
+      subtotal: 0,
+      salesTax: 0,
+      gratuity: 0,
+      total: 0,
+    };
+
+    this.#data.items.forEach((item) => {
+      const split = item.splits.find((s) => s.personID === personID);
+      if (split) {
+        personTotals.subtotal += (split.quantity * item.total) / item.quantity;
+      }
+    });
+
+    personTotals.salesTax =
+      (personTotals.subtotal * this.#data.salesTaxPercentage) / 100;
+    personTotals.gratuity = this.#data.gratuityPreTax
+      ? (personTotals.subtotal * this.#data.gratuityPercentage) / 100
+      : ((personTotals.subtotal + personTotals.salesTax) *
+          this.#data.gratuityPercentage) /
+        100;
+    personTotals.total =
+      personTotals.subtotal + personTotals.salesTax + personTotals.gratuity;
+
+    return personTotals;
   }
 }
