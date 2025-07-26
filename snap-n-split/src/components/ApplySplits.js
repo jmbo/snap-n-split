@@ -1,4 +1,4 @@
-export function ApplySplits({ bill, people, onRemove, onSplit }) {
+export function ApplySplits({ bill, people, onRemove, onSplit, onAddItem }) {
   return (
     <>
       <h3>➗ Apply the Splits</h3>
@@ -46,8 +46,6 @@ function Item({ item, people, onRemove, onSplit }) {
   }
 
   function handleSplit(...params) {
-    console.log(item);
-
     onSplit(item.id, ...params);
   }
 

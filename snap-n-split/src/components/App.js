@@ -6,21 +6,19 @@ import { ViewTotals } from "./ViewTotals";
 import { People, Bill } from "./DataModel";
 
 // import { cloneDeep } from "lodash";
+const peopleData = new People();
+const billData = new Bill();
+
+peopleData.addPerson("Jose");
+peopleData.addPerson("Markus");
+
+billData.addItem(4, "#1 Captain Crunch FT", 80.0);
+billData.addItem(1, "Autumn", 17.95);
+billData.addItem(1, "G&Gs Scramble", 15.0);
 
 export default function App() {
-  const peopleData = new People();
-  const billData = new Bill();
-
-  peopleData.addPerson("Jose");
-  peopleData.addPerson("Markus");
-
-  billData.addItem(4, "#1 Captain Crunch FT", 80.0);
-  billData.addItem(1, "Autumn", 17.95);
-  billData.addItem(1, "G&Gs Scramble", 15.0);
-
   const [step, setStep] = useState(1);
   const [people, setPeople] = useState(peopleData.getData());
-
   const [bill, setBill] = useState(billData.getData());
 
   const steps = [
