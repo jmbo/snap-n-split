@@ -16,6 +16,9 @@ billData.addItem(4, "#1 Captain Crunch FT", 80.0);
 billData.addItem(1, "Autumn", 17.95);
 billData.addItem(1, "G&Gs Scramble", 15.0);
 
+billData.setSalesTaxPercentage(6);
+billData.setGratuityPercentage(20);
+
 export default function App() {
   const [step, setStep] = useState(1);
   const [people, setPeople] = useState(peopleData.getData());
@@ -35,7 +38,7 @@ export default function App() {
       onSplit={handleSplitItem}
       onAddItem={handleAddItem}
     />,
-    <ViewTotals />,
+    <ViewTotals bill={bill} people={people} />,
   ];
 
   // Add/remove handlers
@@ -108,6 +111,10 @@ export default function App() {
       //     : [...newSplits, { peopleID: newPersonID, quantity: newQuantity }];
 
       billData.splitItemAdd(id, newPersonID, newQuantity);
+      peopleData.updatePersonTotals(
+        newPersonID,
+        billData.getPersonTotals(newPersonID)
+      );
 
       // and remove from old
       //   newSplits = newSplits.map((el) =>
@@ -116,6 +123,10 @@ export default function App() {
       //       : el
       //   );
       billData.splitItemRemove(id, oldPersonID, newQuantity);
+      peopleData.updatePersonTotals(
+        oldPersonID,
+        billData.getPersonTotals(oldPersonID)
+      );
     } else {
       // person remains the same, but quantity is changed so:
       //  modify person's split
@@ -130,6 +141,10 @@ export default function App() {
       //       : el
       //   );
       billData.splitItemAdd(id, 0, newQuantity - oldQuantity);
+      peopleData.updatePersonTotals(
+        newPersonID,
+        billData.getPersonTotals(newPersonID)
+      );
     }
     // console.log(newSplits);
 
@@ -142,6 +157,7 @@ export default function App() {
 
     console.log(billData.getData());
     setBill(billData.getData());
+    setPeople(peopleData.getData());
   }
 
   return (

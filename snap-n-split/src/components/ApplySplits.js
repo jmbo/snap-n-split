@@ -3,7 +3,7 @@ export function ApplySplits({ bill, people, onRemove, onSplit, onAddItem }) {
     <>
       <h3>➗ Apply the Splits</h3>
       <p> Click on each item and assign to individuals</p>
-      <div className="list">
+      <div className="data-container list">
         <ul>
           {bill.items.map((item) => (
             <Item
@@ -15,8 +15,30 @@ export function ApplySplits({ bill, people, onRemove, onSplit, onAddItem }) {
             />
           ))}
         </ul>
+        <ion-icon name="add-circle-outline"></ion-icon>
       </div>
-      <ion-icon name="add-circle-outline"></ion-icon>
+      <div className="data-container">
+        <div className="totals">
+          <span>Bill Subtotal</span>
+          <span>${bill.subtotal.toFixed(2)}</span>
+        </div>
+
+        <div className="totals">
+          <span>Sales Tax</span>
+          <input type="text" value={bill.salesTaxPercentage} />% $
+          <input type="text" value={bill.totalSalesTax.toFixed(2)} />
+        </div>
+        <div className="totals">
+          <span>Gratuity</span>
+          <input type="number" value={bill.gratuityPercentage} />% $
+          <input type="text" value={bill.totalGratuity.toFixed(2)} />
+        </div>
+        <div className="totals">
+          <span>Total</span>
+          <span>${bill.total.toFixed(2)}</span>
+        </div>
+      </div>
+      <br />
     </>
   );
 }

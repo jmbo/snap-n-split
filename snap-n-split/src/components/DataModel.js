@@ -74,7 +74,7 @@ export class Bill {
     gratuityPreTax: true,
     subtotal: 0,
     totalSalesTax: 0,
-    gratuityTotal: 0,
+    totalGratuity: 0,
     total: 0,
   };
 
@@ -89,14 +89,14 @@ export class Bill {
   #calculateTaxAndTotals() {
     this.#data.totalSalesTax =
       (this.#data.subtotal * this.#data.salesTaxPercentage) / 100;
-    this.#data.gratuityTotal =
+    this.#data.totalGratuity =
       this.#data.gratuityPreTax === true
         ? (this.#data.subtotal * this.#data.gratuityPercentage) / 100
         : ((this.#data.subtotal + this.#data.totalSalesTax) *
             this.#data.gratuityPercentage) /
           100;
     this.#data.total =
-      this.#data.subtotal + this.#data.totalSalesTax + this.#data.gratuityTotal;
+      this.#data.subtotal + this.#data.totalSalesTax + this.#data.totalGratuity;
   }
 
   getData() {
