@@ -24,16 +24,30 @@ export function ApplySplits({ bill, people, onRemove, onSplit, onAddItem }) {
         </div>
 
         <div className="totals">
-          <span>Sales Tax</span>
-          <input type="text" value={bill.salesTaxPercentage} />% $
-          <input type="text" value={bill.totalSalesTax.toFixed(2)} />
+          <span className="first">Sales Tax</span>
+          <span>
+            <input type="text" value={bill.salesTaxPercentage} /> %
+          </span>
+          <span>
+            $ <input type="text" value={bill.totalSalesTax.toFixed(2)} />
+          </span>
         </div>
         <div className="totals">
-          <span>Gratuity</span>
-          <input type="number" value={bill.gratuityPercentage} />% $
-          <input type="text" value={bill.totalGratuity.toFixed(2)} />
+          <span>Gratuity is pre-tax?</span>
+          <span>
+            <input type="checkbox" checked={bill.gratuityPreTax} />
+          </span>
         </div>
         <div className="totals">
+          <span className="first">Gratuity</span>
+          <span>
+            <input type="number" value={bill.gratuityPercentage} /> %
+          </span>
+          <span>
+            $ <input type="text" value={bill.totalGratuity.toFixed(2)} />
+          </span>
+        </div>
+        <div className="totals total">
           <span>Total</span>
           <span>${bill.total.toFixed(2)}</span>
         </div>

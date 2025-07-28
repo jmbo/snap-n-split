@@ -183,6 +183,20 @@ h1 {
   padding: 0 1rem;
   width: 100%;
 }
+
+.totals .first {
+  text-align: left;
+  width: 5rem;
+  /* padding-right: 10rem; */
+}
+
+.totals input {
+  width: 5rem;
+}
+
+.total {
+  font-weight: bold;
+}
 /* ************************************************ */
 
 .split-container {

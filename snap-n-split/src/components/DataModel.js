@@ -210,8 +210,22 @@ export class Bill {
     return this.getData();
   }
 
+  setSalesTax(amount) {
+    this.setSalesTaxPercentage((amount / this.#data.subtotal) * 100);
+    this.#calculateTaxAndTotals();
+
+    return this.getData();
+  }
+
   setGratuityPercentage(percentage) {
     this.#data.gratuityPercentage = percentage;
+    this.#calculateTaxAndTotals();
+
+    return this.getData();
+  }
+
+  setGratuity(amount) {
+    this.setGratuityPercentage((amount / this.#data.subtotal) * 100);
     this.#calculateTaxAndTotals();
 
     return this.getData();
